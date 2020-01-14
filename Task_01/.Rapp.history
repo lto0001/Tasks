@@ -1,0 +1,5 @@
+install.packages("swirl", dep=T)
+install.packages("swirl", dep=T)
+library(swirl)#
+#
+swirl()
