@@ -26,6 +26,8 @@ beren2 <- Data
 beren3 <- beren2[order(beren2$age) ,]
 write.csv(beren3, "beren_new.csv", quote=F, row.names=FALSE)
 
+#Question 1: After looking at the data his weight and food consumption are not done simultaneously. They do not weigh him ever day but he does eat every day. For the second hypothesis, we do not know how logn he spends at day care each day. So creating a relationship between naps and milk consumption would have missong data.  
+
 # Setting up for Task 02b
 setwd()
 beren3 <- read.csv("beren_new.csv", stringsAsFactors = F)
@@ -33,13 +35,16 @@ Feeds <- which(beren3$event == "bottle")
 
 # Getting summaries of beren3 data
 avgMilk <- mean(beren3$value[Feeds])
+#tapply() function takes some data (here it is value) and some treatment (here it is age in days) and applies some other function (here is it mean) to those data
 avgFeed <- tapply(beren3$value[Feeds], beren3$age[Feeds], mean)
 varFeed <- tapply(beren3$value[Feeds], beren3$age[Feeds], var)
 totalFeed <- tapply(beren3$value[Feeds], beren3$age[Feeds], sum)
 numFeeds <- tapply(beren3$value[Feeds], beren3$age[Feeds], length)
 
 # Finding correlations
+#the cor() function tells us the correlation between two sets of numbers (here it is age and amount consumed per day) If you do ?cor you can find different options for different types of corrolations 
 cor(beren3$value[Feeds], beren3$age[Feeds])
+#cor.test() function works like cor(), but it conducts the appropriate test for the type of correlation you choose (the method argument) and so returns things like a p-value
 cor.test(beren3$value[Feeds], beren3$age[Feeds])
 berenCor <- cor.test(beren3$value[Feeds], beren3$age[Feeds])
 summary(berenCor)
@@ -56,6 +61,8 @@ par(las=1, mar=c(5, 5, 1, 1), mgp=c(2, 0.5, 0), tck=-0.01)
 plot(as.numeric(names(totalFeed)), totalFeed, type="b", pch=16, xlab="age in days", ylab="ounces of milk")
 abline(h=mean(totalFeed), lty=2, col="red")
 dev.off()
+
+#Question 2: The graph is impossible to interpret because their is missing data and it very messy. Also the data is only collected at day care and he spend a different amount of time there each day. 
 
 unique(beren3$event)
 
