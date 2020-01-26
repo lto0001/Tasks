@@ -1,157 +1,3 @@
-Offspring <- c(sample(mother, size = 1), sample (father, size = 1))
-Offspring <- sort(Offspring, decreasing=F)
-return(Offspring)
-}
-mating <- function(mother, father) { #
-	Offspring <- c(sample(mother, size = 1), sample (father, size = 1))#
-	Offspring <- sort(Offspring, decreasing=F)#
-	return(Offspring)#
-}
-makePop <- function(Popsize, Alleles=c("A", "a"), Freqs(0.9, 0.05, 0, 0.05)) {
-makePop <- function(Popsize, Alleles=c("A", "a"), Freqs=c(0.9, 0.05, 0, 0.05)) {
-Genos <- combn(c(Alleles, Alleles), 2)
-Genos <- sort(unique(apply(Genos, 2, paste, collapse="")), decreasing=F)
-Pop <- sample(Genos, size=Popsize, replace=T, prob=Freqs)
-Pop <- matrix(unlist(sapply(Pop, strsplit,"")), ncol=2)
-return(Pop)
-}
-simPop_w <- function(Popsize=100, nGenerations=100, w=c(1, 1, 1, 0), mother=c("A", "a"), father=c("A","a"), Freqs=c(0.9, 0.05, 0, 0.05)) {
-Combinations <- combn(c(mother, father, mother, father), 2)
-Genos <- sort(unique(apply(Combinations, 2, paste, collapse="")), decreasing=F)
-Genotypes <- matrix(0, nrow=nGenerations, ncol=length(Genos))
-colnames(Frequencies) <- Alleles
-names(w) <- colnames(Genotypes)
-checkFitness <- function(Geno, w) {
-Genot <- paste(Geno[1], Geno[2], sep="")
-Fit <- w[Genot]
-return(Fit)
-}
-All_Children <- makePop(Popsize, unique(c(mother, father)), Freqs=Freqs)
-for (generation in 1:nGenerations) {
-Fitnesses <- apply(All_Children, 1, checkFitness, w=w)
-Women <- sample(1:Popsize, size=(Popsize /2))
-Mothers <- All_Children[Women,]
-Men <- setdiff(1:Popsize, Women)
-Fathers <- All_Children[Men,]
-nChildren <- Popsize
-for (child in 1:nChildren) {
-father <- sample(1:nrow(Fathers), size=1, prob=Fitnesses[Men])
-mother <- sample(1:nrow(Mothers), size=1, prob=Fitnesses[Women])
-Child <- mating(Mothers[mother,], Fathers[father,])
-cGenotype <- paste(Child[1], Child[2], sep="")
-Genotypes[generation, cGenotype] <- Genotypes[generation, cGenotype] +1
-All_Children[child,] <- Child
-}
-for (allele in Alleles) {
-n_children <- length(which(All_Children == allele))
-Frequencies[generation, which(Alleles == allele)] <- n_children / length(All_Children)
-}
-output <- data.frame(Frequencies=Frequencies, Genotypes=Genotypes)
-return(output)
-}
-W <- c(0.25, 1, 1, 0.25)
-Population <- simPop_w(Popsize=500, nGenerations=100, w=W, c("A", "a"), C("A", "a"))
-Population <- simPop_w(Popsize=500, nGenerations=100, w=W, c("A", "a"), c("A", "a"))
-mating <- function(mother, father) { #
-	Offspring <- c(sample(mother, size = 1), sample (father, size = 1))#
-	Offspring <- sort(Offspring, decreasing=F)#
-	return(Offspring)#
-}#
-makePop <- function(Popsize, Alleles=c("A", "a"), Freqs=c(0.9, 0.05, 0, 0.05)) {#
-	Genos <- combn(c(Alleles, Alleles), 2)#
-	Genos <- sort(unique(apply(Genos, 2, paste, collapse="")), decreasing=F)#
-	Pop <- sample(Genos, size=Popsize, replace=T, prob=Freqs)#
-	Pop <- matrix(unlist(sapply(Pop, strsplit,"")), ncol=2)#
-	return(Pop)#
-}#
-simPop_w <- function(Popsize=100, nGenerations=100, w=c(1, 1, 1, 0), mother=c("A", "a"), father=c("A","a"), Freqs=c(0.9, 0.05, 0, 0.05)) {#
-	Combinations <- combn(c(mother, father, mother, father), 2)#
-	Genos <- sort(unique(apply(Combinations, 2, paste, collapse="")), decreasing=F)#
-	Genotypes <- matrix(0, nrow=nGenerations, ncol=length(Genos))#
-	colnames(Frequencies) <- Alleles#
-	names(w) <- colnames(Genotypes)#
-	checkFitness <- function(Geno, w) {#
-		Genot <- paste(Geno[1], Geno[2], sep="")#
-		Fit <- w[Genot]#
-		return(Fit)#
-	}#
-	All_Children <- makePop(Popsize, unique(c(mother, father)), Freqs=Freqs)#
-	for (generation in 1:nGenerations) { #
-		#what is their fitnesses? #
-		Fitnesses <- apply(All_Children, 1, checkFitness, w=w)#
-		Women <- sample(1:Popsize, size=(Popsize /2))#
-		Mothers <- All_Children[Women,]#
-		Men <- setdiff(1:Popsize, Women)#
-		Fathers <- All_Children[Men,]#
-		nChildren <- Popsize#
-		for (child in 1:nChildren) {#
-			father <- sample(1:nrow(Fathers), size=1, prob=Fitnesses[Men])#
-			mother <- sample(1:nrow(Mothers), size=1, prob=Fitnesses[Women])#
-			Child <- mating(Mothers[mother,], Fathers[father,])#
-			cGenotype <- paste(Child[1], Child[2], sep="")#
-			Genotypes[generation, cGenotype] <- Genotypes[generation, cGenotype] +1 #
-			All_Children[child,] <- Child#
-		}#
-		for (allele in Alleles) {#
-			n_children <- length(which(All_Children == allele))#
-			Frequencies[generation, which(Alleles == allele)] <- n_children / length(All_Children)#
-		}#
-	}#
-	output <- data.frame(Frequencies=Frequencies, Genotypes=Genotypes)#
-	return(output)#
-}#
-W <- c(0.25, 1, 1, 0.25)#
-Population <- simPop_w(Popsize=500, nGenerations=100, w=W, c("A", "a"), c("A", "a"))
-mating <- function(mother, father) { #
-	Offspring <- c(sample(mother, size = 1), sample (father, size = 1))#
-	Offspring <- sort(Offspring, decreasing=F)#
-	return(Offspring)#
-}#
-makePop <- function(Popsize, Alleles=c("A", "a"), Freqs=c(0.9, 0.05, 0, 0.05)) {#
-	Genos <- combn(c(Alleles, Alleles), 2)#
-	Genos <- sort(unique(apply(Genos, 2, paste, collapse="")), decreasing=F)#
-	Pop <- sample(Genos, size=Popsize, replace=T, prob=Freqs)#
-	Pop <- matrix(unlist(sapply(Pop, strsplit,"")), ncol=2)#
-	return(Pop)#
-}#
-simPop_w <- function(Popsize=100, nGenerations=100, w=c(1, 1, 1, 0), Mother=c("A", "a"), Father=c("A","a"), Freqs=c(0.9, 0.05, 0, 0.05)) {#
-	Combinations <- combn(c(Mother, Father, Mother, Father), 2)#
-	Genos <- sort(unique(apply(Combinations, 2, paste, collapse="")), decreasing=F)#
-	Genotypes <- matrix(0, nrow=nGenerations, ncol=length(Genos))#
-	colnames(Frequencies) <- Alleles#
-	names(w) <- colnames(Genotypes)#
-	checkFitness <- function(Geno, w) {#
-		Genot <- paste(Geno[1], Geno[2], sep="")#
-		Fit <- w[Genot]#
-		return(Fit)#
-	}#
-	All_Children <- makePop(Popsize, unique(c(mother, father)), Freqs=Freqs)#
-	for (generation in 1:nGenerations) { #
-		#what is their fitnesses? #
-		Fitnesses <- apply(All_Children, 1, checkFitness, w=w)#
-		Women <- sample(1:Popsize, size=(Popsize /2))#
-		Mothers <- All_Children[Women,]#
-		Men <- setdiff(1:Popsize, Women)#
-		Fathers <- All_Children[Men,]#
-		nChildren <- Popsize#
-		for (child in 1:nChildren) {#
-			father <- sample(1:nrow(Fathers), size=1, prob=Fitnesses[Men])#
-			mother <- sample(1:nrow(Mothers), size=1, prob=Fitnesses[Women])#
-			Child <- mating(Mothers[mother,], Fathers[father,])#
-			cGenotype <- paste(Child[1], Child[2], sep="")#
-			Genotypes[generation, cGenotype] <- Genotypes[generation, cGenotype] +1 #
-			All_Children[child,] <- Child#
-		}#
-		for (allele in Alleles) {#
-			n_children <- length(which(All_Children == allele))#
-			Frequencies[generation, which(Alleles == allele)] <- n_children / length(All_Children)#
-		}#
-	}#
-	output <- data.frame(Frequencies=Frequencies, Genotypes=Genotypes)#
-	return(output)#
-}#
-W <- c(0.25, 1, 1, 0.25)#
-Population <- simPop_w(Popsize=500, nGenerations=100, w=W, c("A", "a"), c("A", "a"))
 mating <- function(mother, father) { #
 	Offspring <- c(sample(mother, size = 1), sample (father, size = 1))#
 	Offspring <- sort(Offspring, decreasing=F)#
@@ -1011,3 +857,114 @@ plot(as.numeric(names(totalFeed)), totalFeed, type="b", pch=16, xlab="age in day
 abline(h=mean(totalFeed), lty=2, col="red")#
 dev.off()
 unique(beren3$event)
+setwd(~/Desktop/Evolution/Tasks/Task_02)
+setwd("~/Desktop/Evolution/Tasks/Task_02")
+beren3 <- read.csv("beren_new.csv", stringsAsFactors = F)
+which(ints = Skill)
+which(beren3$event == Skill)
+Skill <- which(beren3$event == "skill_crawl_full")
+beren3[Skill, "age"]
+beren3[Skill]
+beren3[Skill,]
+berenYounger <- beren3[which(beren3$age < Age),]#
+berenOlder <- beren3[which(beren3$age > Age),]
+Age <- beren3[Skill, "age"]#
+#
+berenYounger <- beren3[which(beren3$age < Age),]#
+berenOlder <- beren3[which(beren3$age > Age),]
+head(berenYounger)
+tail(berenYounger)
+tail(berenOlder)
+nrow(berenOlder)
+nrow(berenYounger)
+berenYounger <- beren3[which(beren3$age < Age),]
+berenOlder <- beren3[which(beren3$age > Age),]
+Feeds <- beren3[which(berenYounger$event == "bottle")]
+Feeds <- which(berenYounger$event == "bottle")
+youngerOverallAvgMilk <- mean(berenYounger$value["Feeds"])
+youngerPerDayAvgMilk <- tapply(berenYounger$value[Feeds], berenYounger$age[Feeds], mean)
+beforeAvgMilk <- mean(youngerPerDayAvgMilk$value[Feeds])
+beforeAvgMilk <- mean(youngerPerDayAvgMilk$value["Feeds"])
+beforeAvgMilk <- mean(youngerPerDayAvgMilk)
+# Read in data & set up working directory#
+setwd("~/Desktop/Evolution/Tasks/Task_02")#
+beren3 <- read.csv("beren_new.csv", stringsAsFactors = F)
+# Find which row he learned to crawl#
+Skill <- which(beren3$event == "skill_crawl_full")#
+#
+# Find day he learned to crawl#
+Age <- beren3[Skill, "age"]
+# Subset data by older and younger than day he learned to crawl#
+berenYounger <- beren3[which(beren3$age < Age),]#
+berenOlder <- beren3[which(beren3$age > Age),]
+# Subset berenYounger to be only bottle feeds#
+Feeds <- which(berenYounger$event == "bottle")#
+#
+# Use mean() on value column to get overall avg milk for subset younger#
+youngerOverallAvgMilk <- mean(berenYounger$value["Feeds"])
+youngerOverallAvgMilk
+berenYounger$value
+berenYounger$value[Feeds]
+berenYounger[Feeds,]
+berenYounger$value[Feeds]
+mean(berenYounger$value[Feeds])
+# Use mean() on value column to get overall avg milk for subset younger#
+youngerOverallAvgMilk <- mean(berenYounger$value["Feeds"])
+youngerOverallAvgMilk
+# Use mean() on value column to get overall avg milk for subset younger#
+youngerOverallAvgMilk <- mean(berenYounger$value[Feeds])
+youngerOverallAvgMilk
+# Use tapply() on value & age to get per-day avg milk for younger#
+youngerPerDayAvgMilk <- tapply(berenYounger$value[Feeds], berenYounger$age[Feeds], mean)
+# Use tapply() on value & age to get per-day avg milk for younger#
+youngerPerDayAvgMilk <- tapply(berenYounger$value[Feeds], berenYounger$age[Feeds], mean)
+youngerPerDayAvgMilk
+# Use mean() on youngerPerDayAvgMilk to get avg milk before crawl#
+beforeAvgMilk <- mean(youngerPerDayAvgMilk)
+### Repeat above 4 steps for older#
+Feeds <- which(berenOlder$event == "bottle")#
+olderOverallAvgMilk <- mean(berenOlder$value["Feeds"])#
+olderPerDayAvgMilk <- tapply(berenOlder$value[Feeds], berenYounger$age[Feeds], mean)
+boxplot(youngerPerDayAvgMilk, olderPerDayAvgMilk)
+Skill <- grep("high", beren3$event)
+Skill
+# Find day he learned to crawl#
+Age <- beren3[Skill, "age"]#
+#
+# Subset data by older and younger than day he learned to crawl#
+berenYounger <- beren3[which(beren3$age < Age),]#
+berenOlder <- beren3[which(beren3$age > Age),]#
+#
+# Subset berenYounger to be only bottle feeds#
+Feeds <- which(berenYounger$event == "bottle")#
+#
+# Use mean() on value column to get overall avg milk for subset younger#
+youngerOverallAvgMilk <- mean(berenYounger$value[Feeds])#
+#
+# Use tapply() on value & age to get per-day avg milk for younger#
+youngerPerDayAvgMilk <- tapply(berenYounger$value[Feeds], berenYounger$age[Feeds], mean)#
+#
+# Use mean() on youngerPerDayAvgMilk to get avg milk before crawl#
+beforeAvgMilk <- mean(youngerPerDayAvgMilk)#
+#
+### Repeat above 4 steps for older#
+Feeds <- which(berenOlder$event == "bottle")#
+olderOverallAvgMilk <- mean(berenOlder$value["Feeds"])#
+olderPerDayAvgMilk <- tapply(berenOlder$value[Feeds], berenYounger$age[Feeds], mean)#
+#
+boxplot(youngerPerDayAvgMilk, olderPerDayAvgMilk)
+par(mfrow=c(1,2))#
+plot(as.numeric(names(youngerPerDayAvgMilk)), youngerPerDayAvgMilk, type="b")#
+plot(as.numeric(names(olderPerDayAvgMilk)), olderPerDayAvgMilk, type="b")
+olderPerDayAvgMilk
+beren3[which(beren3$age > Age),]
+### Repeat above 4 steps for older#
+Feeds <- which(berenOlder$event == "bottle")#
+olderOverallAvgMilk <- mean(berenOlder$value[Feeds])#
+olderPerDayAvgMilk <- tapply(berenOlder$value[Feeds], berenOlder$age[Feeds], mean)#
+#
+boxplot(youngerPerDayAvgMilk, olderPerDayAvgMilk)#
+#
+par(mfrow=c(1,2))#
+plot(as.numeric(names(youngerPerDayAvgMilk)), youngerPerDayAvgMilk, type="b")#
+plot(as.numeric(names(olderPerDayAvgMilk)), olderPerDayAvgMilk, type="b")
