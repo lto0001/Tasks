@@ -1,174 +1,3 @@
-mating <- function(mother, father) { #
-	Offspring <- c(sample(mother, size = 1), sample (father, size = 1))#
-	Offspring <- sort(Offspring, decreasing=F)#
-	return(Offspring)#
-}#
-makePop <- function(Popsize, Alleles=c("A", "a"), Freqs=c(0.9, 0.05, 0, 0.05)) {#
-	Genos <- combn(c(Alleles, Alleles), 2)#
-	Genos <- sort(unique(apply(Genos, 2, paste, collapse="")), decreasing=F)#
-	Pop <- sample(Genos, size=Popsize, replace=T, prob=Freqs)#
-	Pop <- matrix(unlist(sapply(Pop, strsplit,"")), ncol=2)#
-	return(Pop)#
-}#
-simPop_w <- function(Popsize=100, nGenerations=100, w=c(1, 1, 1, 0), Mother=c("A", "a"), Father=c("A","a"), Freqs=c(0.9, 0.05, 0, 0.05)) {#
-	Combinations <- combn(c(Mother, Father, Mother, Father), 2)#
-	Genos <- sort(unique(apply(Combinations, 2, paste, collapse="")), decreasing=F)#
-	Genotypes <- matrix(0, nrow=nGenerations, ncol=length(Genos))#
-	colnames(Frequencies) <- Genos#
-	Alleles <- unique(as.vector(Combinations))#
-	Frequencies <- matrix(0, nrow=nGenerations, ncol=length(Alleles))#
-	colnames(Frequencies) <- Alleles #
-	names(w) <- colnames(Genotypes)#
-	checkFitness <- function(Geno, w) {#
-		Genot <- paste(Geno[1], Geno[2], sep="")#
-		Fit <- w[Genot]#
-		return(Fit)#
-	}#
-	All_Children <- makePop(Popsize, unique(c(mother, father)), Freqs=Freqs)#
-	for (generation in 1:nGenerations) { #
-		#what is their fitnesses? #
-		Fitnesses <- apply(All_Children, 1, checkFitness, w=w)#
-		Women <- sample(1:Popsize, size=(Popsize /2))#
-		Mothers <- All_Children[Women,]#
-		Men <- setdiff(1:Popsize, Women)#
-		Fathers <- All_Children[Men,]#
-		nChildren <- Popsize#
-		for (child in 1:nChildren) {#
-			father <- sample(1:nrow(Fathers), size=1, prob=Fitnesses[Men])#
-			mother <- sample(1:nrow(Mothers), size=1, prob=Fitnesses[Women])#
-			Child <- mating(Mothers[mother,], Fathers[father,])#
-			cGenotype <- paste(Child[1], Child[2], sep="")#
-			Genotypes[generation, cGenotype] <- Genotypes[generation, cGenotype] +1 #
-			All_Children[child,] <- Child#
-		}#
-		for (allele in Alleles) {#
-			n_children <- length(which(All_Children == allele))#
-			Frequencies[generation, which(Alleles == allele)] <- n_children / length(All_Children)#
-		}#
-	}#
-	output <- data.frame(Frequencies=Frequencies, Genotypes=Genotypes)#
-	return(output)#
-}#
-W <- c(0.25, 1, 1, 0.25)#
-Population <- simPop_w(Popsize=500, nGenerations=100, w=W, c("A", "a"), c("A", "a"))
-mating <- function(mother, father) { #
-	Offspring <- c(sample(mother, size = 1), sample (father, size = 1))#
-	Offspring <- sort(Offspring, decreasing=F)#
-	return(Offspring)#
-}#
-makePop <- function(Popsize, Alleles=c("A", "a"), Freqs=c(0.9, 0.05, 0, 0.05)) {#
-	Genos <- combn(c(Alleles, Alleles), 2)#
-	Genos <- sort(unique(apply(Genos, 2, paste, collapse="")), decreasing=F)#
-	Pop <- sample(Genos, size=Popsize, replace=T, prob=Freqs)#
-	Pop <- matrix(unlist(sapply(Pop, strsplit,"")), ncol=2)#
-	return(Pop)#
-}#
-simPop_w <- function(Popsize=100, nGenerations=100, w=c(1, 1, 1, 0), Mother=c("A", "a"), Father=c("A","a"), Freqs=c(0.9, 0.05, 0, 0.05)) {#
-	Combinations <- combn(c(Mother, Father, Mother, Father), 2)#
-	Genos <- sort(unique(apply(Combinations, 2, paste, collapse="")), decreasing=F)#
-	Genotypes <- matrix(0, nrow=nGenerations, ncol=length(Genos))#
-	colnames(Genotypes) <- Genos#
-	Alleles <- unique(as.vector(Combinations))#
-	Frequencies <- matrix(0, nrow=nGenerations, ncol=length(Alleles))#
-	colnames(Frequencies) <- Alleles #
-	names(w) <- colnames(Genotypes)#
-	checkFitness <- function(Geno, w) {#
-		Genot <- paste(Geno[1], Geno[2], sep="")#
-		Fit <- w[Genot]#
-		return(Fit)#
-	}#
-	All_Children <- makePop(Popsize, unique(c(mother, father)), Freqs=Freqs)#
-	for (generation in 1:nGenerations) { #
-		#what is their fitnesses? #
-		Fitnesses <- apply(All_Children, 1, checkFitness, w=w)#
-		Women <- sample(1:Popsize, size=(Popsize /2))#
-		Mothers <- All_Children[Women,]#
-		Men <- setdiff(1:Popsize, Women)#
-		Fathers <- All_Children[Men,]#
-		nChildren <- Popsize#
-		for (child in 1:nChildren) {#
-			father <- sample(1:nrow(Fathers), size=1, prob=Fitnesses[Men])#
-			mother <- sample(1:nrow(Mothers), size=1, prob=Fitnesses[Women])#
-			Child <- mating(Mothers[mother,], Fathers[father,])#
-			cGenotype <- paste(Child[1], Child[2], sep="")#
-			Genotypes[generation, cGenotype] <- Genotypes[generation, cGenotype] +1 #
-			All_Children[child,] <- Child#
-		}#
-		for (allele in Alleles) {#
-			n_children <- length(which(All_Children == allele))#
-			Frequencies[generation, which(Alleles == allele)] <- n_children / length(All_Children)#
-		}#
-	}#
-	output <- data.frame(Frequencies=Frequencies, Genotypes=Genotypes)#
-	return(output)#
-}#
-W <- c(0.25, 1, 1, 0.25)#
-Population <- simPop_w(Popsize=500, nGenerations=100, w=W, c("A", "a"), c("A", "a"))
-mating <- function(mother, father) { #
-	Offspring <- c(sample(mother, size = 1), sample (father, size = 1))#
-	Offspring <- sort(Offspring, decreasing=F)#
-	return(Offspring)#
-}#
-makePop <- function(Popsize, Alleles=c("A", "a"), Freqs=c(0.9, 0.05, 0, 0.05)) {#
-	Genos <- combn(c(Alleles, Alleles), 2)#
-	Genos <- sort(unique(apply(Genos, 2, paste, collapse="")), decreasing=F)#
-	Pop <- sample(Genos, size=Popsize, replace=T, prob=Freqs)#
-	Pop <- matrix(unlist(sapply(Pop, strsplit,"")), ncol=2)#
-	return(Pop)#
-}#
-simPop_w <- function(Popsize=100, nGenerations=100, w=c(1, 1, 1, 0), Mother=c("A", "a"), Father=c("A","a"), Freqs=c(0.9, 0.05, 0, 0.05)) {#
-	Combinations <- combn(c(Mother, Father, Mother, Father), 2)#
-	Genos <- sort(unique(apply(Combinations, 2, paste, collapse="")), decreasing=F)#
-	Genotypes <- matrix(0, nrow=nGenerations, ncol=length(Genos))#
-	colnames(Genotypes) <- Genos#
-	Alleles <- unique(as.vector(Combinations))#
-	Frequencies <- matrix(0, nrow=nGenerations, ncol=length(Alleles))#
-	colnames(Frequencies) <- Alleles #
-	names(w) <- colnames(Genotypes)#
-	checkFitness <- function(Geno, w) {#
-		Genot <- paste(Geno[1], Geno[2], sep="")#
-		Fit <- w[Genot]#
-		return(Fit)#
-	}#
-	All_Children <- makePop(Popsize, unique(c(Mother, Father)), Freqs=Freqs)#
-	for (generation in 1:nGenerations) { #
-		#what is their fitnesses? #
-		Fitnesses <- apply(All_Children, 1, checkFitness, w=w)#
-		Women <- sample(1:Popsize, size=(Popsize /2))#
-		Mothers <- All_Children[Women,]#
-		Men <- setdiff(1:Popsize, Women)#
-		Fathers <- All_Children[Men,]#
-		nChildren <- Popsize#
-		for (child in 1:nChildren) {#
-			father <- sample(1:nrow(Fathers), size=1, prob=Fitnesses[Men])#
-			mother <- sample(1:nrow(Mothers), size=1, prob=Fitnesses[Women])#
-			Child <- mating(Mothers[mother,], Fathers[father,])#
-			cGenotype <- paste(Child[1], Child[2], sep="")#
-			Genotypes[generation, cGenotype] <- Genotypes[generation, cGenotype] +1 #
-			All_Children[child,] <- Child#
-		}#
-		for (allele in Alleles) {#
-			n_children <- length(which(All_Children == allele))#
-			Frequencies[generation, which(Alleles == allele)] <- n_children / length(All_Children)#
-		}#
-	}#
-	output <- data.frame(Frequencies=Frequencies, Genotypes=Genotypes)#
-	return(output)#
-}#
-W <- c(0.25, 1, 1, 0.25)#
-Population <- simPop_w(Popsize=500, nGenerations=100, w=W, c("A", "a"), c("A", "a"))
-sim_meanFitness <- function(counts, w=c(0.25, 1, 1, 0.25)) {
-Total <- sum(counts)
-AA <- w[4] * (counts[4] / Total)
-Aa <- (w[2] * (counts[2] / Total) ) + (w[3] / Total) )
-sim_meanFitness <- function(counts, w=c(0.25, 1, 1, 0.25)) {#
-	Total <- sum(counts)#
-	AA <- w[4] * (counts[4] / Total)#
-	Aa <- (w[2] * (counts[2] / Total)) + (w[3] / Total))
-sim_meanFitness <- function(counts, w=c(0.25, 1, 1, 0.25)) {#
-	Total <- sum(counts)#
-	AA <- w[4] * (counts[4] / Total)#
-	Aa <- (w[2] * (counts[2] / Total) + (w[3] / Total)
 Aa <- (w[2] * (counts[2] / Total) + (w[3] / Total)
 sim_meanFitness <- function(counts, w=c(0.25, 1, 1, 0.25)) {#
 	Total <- sum(counts)#
@@ -968,3 +797,14 @@ boxplot(youngerPerDayAvgMilk, olderPerDayAvgMilk)#
 par(mfrow=c(1,2))#
 plot(as.numeric(names(youngerPerDayAvgMilk)), youngerPerDayAvgMilk, type="b")#
 plot(as.numeric(names(olderPerDayAvgMilk)), olderPerDayAvgMilk, type="b")
+boxplot(youngerPerDayAvgMilk, olderPerDayAvgMilk)
+par(mfrow=c(1,2))
+plot(as.numeric(names(youngerPerDayAvgMilk)), youngerPerDayAvgMilk, type="b")
+plot(as.numeric(names(olderPerDayAvgMilk)), olderPerDayAvgMilk, type="b")
+plot(as.numeric(names(youngerPerDayAvgMilk)), youngerPerDayAvgMilk, type="b" , xlab="age in days" , ylab="ounces of milk")
+plot(as.numeric(names(olderPerDayAvgMilk)), olderPerDayAvgMilk, type="b" , xlab-"age in days" , ylab-"ounces of milk")
+plot(as.numeric(names(olderPerDayAvgMilk)), olderPerDayAvgMilk, type="b" , xlab="age in days" , ylab="ounces of milk")
+plot(as.numeric(names(youngerPerDayAvgMilk)), youngerPerDayAvgMilk, type="b" , xlab="Age in Days" , ylab="Ounces of Milk" , main="Before Learning to Crawl Full")#
+plot(as.numeric(names(olderPerDayAvgMilk)), olderPerDayAvgMilk, type="b" , xlab="Age in days" , ylab="Ounces of milk" , main="After Learning Crawl Full ")
+plot(as.numeric(names(youngerPerDayAvgMilk)), youngerPerDayAvgMilk, type="b" , xlab="Age in Days" , ylab="Ounces of Milk" , main="Before Learning to Crawl Full")#
+plot(as.numeric(names(olderPerDayAvgMilk)), olderPerDayAvgMilk, type="b" , xlab="Age in days" , ylab="Ounces of milk" , main="After Learning to Crawl Full ")
