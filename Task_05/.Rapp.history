@@ -1,0 +1,889 @@
+Men <- setdiff(1:Popsize, Women)
+Fathers <- All_Children[Men,]
+nChildren <- Popsize
+for (child in 1:nChildren) {
+father <- sample(1:nrow(Fathers), size=1, prob=Fitnesses[Men])
+mother <- sample(1:nrow(Mothers), size=1, prob=Fitnesses[Women])
+Child <- mating(Mothers[mother,], Fathers[father,])
+cGenotype <- paste(Child[1], Child[2], sep="")
+Genotypes[generation, cGenotype] <- Genotypes[generation, cGenotype] +1
+All_Children[child,] <- Child
+}
+for (allele in Alleles) {
+n_children <- length(which(All_Children == allele))
+Frequencies[generation, which(Alleles == allele)] <- n_children / length(All_Children)
+}
+output <- data.frame(Frequencies=Frequencies, Genotypes=Genotypes)
+return(output)
+}
+W <- c(0.25, 1, 1, 0.25)
+Population <- simPop_w(Popsize=500, nGenerations=100, w=W, c("A", "a"), C("A", "a"))
+Population <- simPop_w(Popsize=500, nGenerations=100, w=W, c("A", "a"), c("A", "a"))
+mating <- function(mother, father) { #
+	Offspring <- c(sample(mother, size = 1), sample (father, size = 1))#
+	Offspring <- sort(Offspring, decreasing=F)#
+	return(Offspring)#
+}#
+makePop <- function(Popsize, Alleles=c("A", "a"), Freqs=c(0.9, 0.05, 0, 0.05)) {#
+	Genos <- combn(c(Alleles, Alleles), 2)#
+	Genos <- sort(unique(apply(Genos, 2, paste, collapse="")), decreasing=F)#
+	Pop <- sample(Genos, size=Popsize, replace=T, prob=Freqs)#
+	Pop <- matrix(unlist(sapply(Pop, strsplit,"")), ncol=2)#
+	return(Pop)#
+}#
+simPop_w <- function(Popsize=100, nGenerations=100, w=c(1, 1, 1, 0), mother=c("A", "a"), father=c("A","a"), Freqs=c(0.9, 0.05, 0, 0.05)) {#
+	Combinations <- combn(c(mother, father, mother, father), 2)#
+	Genos <- sort(unique(apply(Combinations, 2, paste, collapse="")), decreasing=F)#
+	Genotypes <- matrix(0, nrow=nGenerations, ncol=length(Genos))#
+	colnames(Frequencies) <- Alleles#
+	names(w) <- colnames(Genotypes)#
+	checkFitness <- function(Geno, w) {#
+		Genot <- paste(Geno[1], Geno[2], sep="")#
+		Fit <- w[Genot]#
+		return(Fit)#
+	}#
+	All_Children <- makePop(Popsize, unique(c(mother, father)), Freqs=Freqs)#
+	for (generation in 1:nGenerations) { #
+		#what is their fitnesses? #
+		Fitnesses <- apply(All_Children, 1, checkFitness, w=w)#
+		Women <- sample(1:Popsize, size=(Popsize /2))#
+		Mothers <- All_Children[Women,]#
+		Men <- setdiff(1:Popsize, Women)#
+		Fathers <- All_Children[Men,]#
+		nChildren <- Popsize#
+		for (child in 1:nChildren) {#
+			father <- sample(1:nrow(Fathers), size=1, prob=Fitnesses[Men])#
+			mother <- sample(1:nrow(Mothers), size=1, prob=Fitnesses[Women])#
+			Child <- mating(Mothers[mother,], Fathers[father,])#
+			cGenotype <- paste(Child[1], Child[2], sep="")#
+			Genotypes[generation, cGenotype] <- Genotypes[generation, cGenotype] +1 #
+			All_Children[child,] <- Child#
+		}#
+		for (allele in Alleles) {#
+			n_children <- length(which(All_Children == allele))#
+			Frequencies[generation, which(Alleles == allele)] <- n_children / length(All_Children)#
+		}#
+	}#
+	output <- data.frame(Frequencies=Frequencies, Genotypes=Genotypes)#
+	return(output)#
+}#
+W <- c(0.25, 1, 1, 0.25)#
+Population <- simPop_w(Popsize=500, nGenerations=100, w=W, c("A", "a"), c("A", "a"))
+mating <- function(mother, father) { #
+	Offspring <- c(sample(mother, size = 1), sample (father, size = 1))#
+	Offspring <- sort(Offspring, decreasing=F)#
+	return(Offspring)#
+}#
+makePop <- function(Popsize, Alleles=c("A", "a"), Freqs=c(0.9, 0.05, 0, 0.05)) {#
+	Genos <- combn(c(Alleles, Alleles), 2)#
+	Genos <- sort(unique(apply(Genos, 2, paste, collapse="")), decreasing=F)#
+	Pop <- sample(Genos, size=Popsize, replace=T, prob=Freqs)#
+	Pop <- matrix(unlist(sapply(Pop, strsplit,"")), ncol=2)#
+	return(Pop)#
+}#
+simPop_w <- function(Popsize=100, nGenerations=100, w=c(1, 1, 1, 0), Mother=c("A", "a"), Father=c("A","a"), Freqs=c(0.9, 0.05, 0, 0.05)) {#
+	Combinations <- combn(c(Mother, Father, Mother, Father), 2)#
+	Genos <- sort(unique(apply(Combinations, 2, paste, collapse="")), decreasing=F)#
+	Genotypes <- matrix(0, nrow=nGenerations, ncol=length(Genos))#
+	colnames(Frequencies) <- Alleles#
+	names(w) <- colnames(Genotypes)#
+	checkFitness <- function(Geno, w) {#
+		Genot <- paste(Geno[1], Geno[2], sep="")#
+		Fit <- w[Genot]#
+		return(Fit)#
+	}#
+	All_Children <- makePop(Popsize, unique(c(mother, father)), Freqs=Freqs)#
+	for (generation in 1:nGenerations) { #
+		#what is their fitnesses? #
+		Fitnesses <- apply(All_Children, 1, checkFitness, w=w)#
+		Women <- sample(1:Popsize, size=(Popsize /2))#
+		Mothers <- All_Children[Women,]#
+		Men <- setdiff(1:Popsize, Women)#
+		Fathers <- All_Children[Men,]#
+		nChildren <- Popsize#
+		for (child in 1:nChildren) {#
+			father <- sample(1:nrow(Fathers), size=1, prob=Fitnesses[Men])#
+			mother <- sample(1:nrow(Mothers), size=1, prob=Fitnesses[Women])#
+			Child <- mating(Mothers[mother,], Fathers[father,])#
+			cGenotype <- paste(Child[1], Child[2], sep="")#
+			Genotypes[generation, cGenotype] <- Genotypes[generation, cGenotype] +1 #
+			All_Children[child,] <- Child#
+		}#
+		for (allele in Alleles) {#
+			n_children <- length(which(All_Children == allele))#
+			Frequencies[generation, which(Alleles == allele)] <- n_children / length(All_Children)#
+		}#
+	}#
+	output <- data.frame(Frequencies=Frequencies, Genotypes=Genotypes)#
+	return(output)#
+}#
+W <- c(0.25, 1, 1, 0.25)#
+Population <- simPop_w(Popsize=500, nGenerations=100, w=W, c("A", "a"), c("A", "a"))
+mating <- function(mother, father) { #
+	Offspring <- c(sample(mother, size = 1), sample (father, size = 1))#
+	Offspring <- sort(Offspring, decreasing=F)#
+	return(Offspring)#
+}#
+makePop <- function(Popsize, Alleles=c("A", "a"), Freqs=c(0.9, 0.05, 0, 0.05)) {#
+	Genos <- combn(c(Alleles, Alleles), 2)#
+	Genos <- sort(unique(apply(Genos, 2, paste, collapse="")), decreasing=F)#
+	Pop <- sample(Genos, size=Popsize, replace=T, prob=Freqs)#
+	Pop <- matrix(unlist(sapply(Pop, strsplit,"")), ncol=2)#
+	return(Pop)#
+}#
+simPop_w <- function(Popsize=100, nGenerations=100, w=c(1, 1, 1, 0), Mother=c("A", "a"), Father=c("A","a"), Freqs=c(0.9, 0.05, 0, 0.05)) {#
+	Combinations <- combn(c(Mother, Father, Mother, Father), 2)#
+	Genos <- sort(unique(apply(Combinations, 2, paste, collapse="")), decreasing=F)#
+	Genotypes <- matrix(0, nrow=nGenerations, ncol=length(Genos))#
+	colnames(Frequencies) <- Genos#
+	Alleles <- unique(as.vector(Combinations))#
+	Frequencies <- matrix(0, nrow=nGenerations, ncol=length(Alleles))#
+	colnames(Frequencies) <- Alleles #
+	names(w) <- colnames(Genotypes)#
+	checkFitness <- function(Geno, w) {#
+		Genot <- paste(Geno[1], Geno[2], sep="")#
+		Fit <- w[Genot]#
+		return(Fit)#
+	}#
+	All_Children <- makePop(Popsize, unique(c(mother, father)), Freqs=Freqs)#
+	for (generation in 1:nGenerations) { #
+		#what is their fitnesses? #
+		Fitnesses <- apply(All_Children, 1, checkFitness, w=w)#
+		Women <- sample(1:Popsize, size=(Popsize /2))#
+		Mothers <- All_Children[Women,]#
+		Men <- setdiff(1:Popsize, Women)#
+		Fathers <- All_Children[Men,]#
+		nChildren <- Popsize#
+		for (child in 1:nChildren) {#
+			father <- sample(1:nrow(Fathers), size=1, prob=Fitnesses[Men])#
+			mother <- sample(1:nrow(Mothers), size=1, prob=Fitnesses[Women])#
+			Child <- mating(Mothers[mother,], Fathers[father,])#
+			cGenotype <- paste(Child[1], Child[2], sep="")#
+			Genotypes[generation, cGenotype] <- Genotypes[generation, cGenotype] +1 #
+			All_Children[child,] <- Child#
+		}#
+		for (allele in Alleles) {#
+			n_children <- length(which(All_Children == allele))#
+			Frequencies[generation, which(Alleles == allele)] <- n_children / length(All_Children)#
+		}#
+	}#
+	output <- data.frame(Frequencies=Frequencies, Genotypes=Genotypes)#
+	return(output)#
+}#
+W <- c(0.25, 1, 1, 0.25)#
+Population <- simPop_w(Popsize=500, nGenerations=100, w=W, c("A", "a"), c("A", "a"))
+mating <- function(mother, father) { #
+	Offspring <- c(sample(mother, size = 1), sample (father, size = 1))#
+	Offspring <- sort(Offspring, decreasing=F)#
+	return(Offspring)#
+}#
+makePop <- function(Popsize, Alleles=c("A", "a"), Freqs=c(0.9, 0.05, 0, 0.05)) {#
+	Genos <- combn(c(Alleles, Alleles), 2)#
+	Genos <- sort(unique(apply(Genos, 2, paste, collapse="")), decreasing=F)#
+	Pop <- sample(Genos, size=Popsize, replace=T, prob=Freqs)#
+	Pop <- matrix(unlist(sapply(Pop, strsplit,"")), ncol=2)#
+	return(Pop)#
+}#
+simPop_w <- function(Popsize=100, nGenerations=100, w=c(1, 1, 1, 0), Mother=c("A", "a"), Father=c("A","a"), Freqs=c(0.9, 0.05, 0, 0.05)) {#
+	Combinations <- combn(c(Mother, Father, Mother, Father), 2)#
+	Genos <- sort(unique(apply(Combinations, 2, paste, collapse="")), decreasing=F)#
+	Genotypes <- matrix(0, nrow=nGenerations, ncol=length(Genos))#
+	colnames(Genotypes) <- Genos#
+	Alleles <- unique(as.vector(Combinations))#
+	Frequencies <- matrix(0, nrow=nGenerations, ncol=length(Alleles))#
+	colnames(Frequencies) <- Alleles #
+	names(w) <- colnames(Genotypes)#
+	checkFitness <- function(Geno, w) {#
+		Genot <- paste(Geno[1], Geno[2], sep="")#
+		Fit <- w[Genot]#
+		return(Fit)#
+	}#
+	All_Children <- makePop(Popsize, unique(c(mother, father)), Freqs=Freqs)#
+	for (generation in 1:nGenerations) { #
+		#what is their fitnesses? #
+		Fitnesses <- apply(All_Children, 1, checkFitness, w=w)#
+		Women <- sample(1:Popsize, size=(Popsize /2))#
+		Mothers <- All_Children[Women,]#
+		Men <- setdiff(1:Popsize, Women)#
+		Fathers <- All_Children[Men,]#
+		nChildren <- Popsize#
+		for (child in 1:nChildren) {#
+			father <- sample(1:nrow(Fathers), size=1, prob=Fitnesses[Men])#
+			mother <- sample(1:nrow(Mothers), size=1, prob=Fitnesses[Women])#
+			Child <- mating(Mothers[mother,], Fathers[father,])#
+			cGenotype <- paste(Child[1], Child[2], sep="")#
+			Genotypes[generation, cGenotype] <- Genotypes[generation, cGenotype] +1 #
+			All_Children[child,] <- Child#
+		}#
+		for (allele in Alleles) {#
+			n_children <- length(which(All_Children == allele))#
+			Frequencies[generation, which(Alleles == allele)] <- n_children / length(All_Children)#
+		}#
+	}#
+	output <- data.frame(Frequencies=Frequencies, Genotypes=Genotypes)#
+	return(output)#
+}#
+W <- c(0.25, 1, 1, 0.25)#
+Population <- simPop_w(Popsize=500, nGenerations=100, w=W, c("A", "a"), c("A", "a"))
+mating <- function(mother, father) { #
+	Offspring <- c(sample(mother, size = 1), sample (father, size = 1))#
+	Offspring <- sort(Offspring, decreasing=F)#
+	return(Offspring)#
+}#
+makePop <- function(Popsize, Alleles=c("A", "a"), Freqs=c(0.9, 0.05, 0, 0.05)) {#
+	Genos <- combn(c(Alleles, Alleles), 2)#
+	Genos <- sort(unique(apply(Genos, 2, paste, collapse="")), decreasing=F)#
+	Pop <- sample(Genos, size=Popsize, replace=T, prob=Freqs)#
+	Pop <- matrix(unlist(sapply(Pop, strsplit,"")), ncol=2)#
+	return(Pop)#
+}#
+simPop_w <- function(Popsize=100, nGenerations=100, w=c(1, 1, 1, 0), Mother=c("A", "a"), Father=c("A","a"), Freqs=c(0.9, 0.05, 0, 0.05)) {#
+	Combinations <- combn(c(Mother, Father, Mother, Father), 2)#
+	Genos <- sort(unique(apply(Combinations, 2, paste, collapse="")), decreasing=F)#
+	Genotypes <- matrix(0, nrow=nGenerations, ncol=length(Genos))#
+	colnames(Genotypes) <- Genos#
+	Alleles <- unique(as.vector(Combinations))#
+	Frequencies <- matrix(0, nrow=nGenerations, ncol=length(Alleles))#
+	colnames(Frequencies) <- Alleles #
+	names(w) <- colnames(Genotypes)#
+	checkFitness <- function(Geno, w) {#
+		Genot <- paste(Geno[1], Geno[2], sep="")#
+		Fit <- w[Genot]#
+		return(Fit)#
+	}#
+	All_Children <- makePop(Popsize, unique(c(Mother, Father)), Freqs=Freqs)#
+	for (generation in 1:nGenerations) { #
+		#what is their fitnesses? #
+		Fitnesses <- apply(All_Children, 1, checkFitness, w=w)#
+		Women <- sample(1:Popsize, size=(Popsize /2))#
+		Mothers <- All_Children[Women,]#
+		Men <- setdiff(1:Popsize, Women)#
+		Fathers <- All_Children[Men,]#
+		nChildren <- Popsize#
+		for (child in 1:nChildren) {#
+			father <- sample(1:nrow(Fathers), size=1, prob=Fitnesses[Men])#
+			mother <- sample(1:nrow(Mothers), size=1, prob=Fitnesses[Women])#
+			Child <- mating(Mothers[mother,], Fathers[father,])#
+			cGenotype <- paste(Child[1], Child[2], sep="")#
+			Genotypes[generation, cGenotype] <- Genotypes[generation, cGenotype] +1 #
+			All_Children[child,] <- Child#
+		}#
+		for (allele in Alleles) {#
+			n_children <- length(which(All_Children == allele))#
+			Frequencies[generation, which(Alleles == allele)] <- n_children / length(All_Children)#
+		}#
+	}#
+	output <- data.frame(Frequencies=Frequencies, Genotypes=Genotypes)#
+	return(output)#
+}#
+W <- c(0.25, 1, 1, 0.25)#
+Population <- simPop_w(Popsize=500, nGenerations=100, w=W, c("A", "a"), c("A", "a"))
+sim_meanFitness <- function(counts, w=c(0.25, 1, 1, 0.25)) {
+Total <- sum(counts)
+AA <- w[4] * (counts[4] / Total)
+Aa <- (w[2] * (counts[2] / Total) ) + (w[3] / Total) )
+sim_meanFitness <- function(counts, w=c(0.25, 1, 1, 0.25)) {#
+	Total <- sum(counts)#
+	AA <- w[4] * (counts[4] / Total)#
+	Aa <- (w[2] * (counts[2] / Total)) + (w[3] / Total))
+sim_meanFitness <- function(counts, w=c(0.25, 1, 1, 0.25)) {#
+	Total <- sum(counts)#
+	AA <- w[4] * (counts[4] / Total)#
+	Aa <- (w[2] * (counts[2] / Total) + (w[3] / Total)
+Aa <- (w[2] * (counts[2] / Total) + (w[3] / Total)
+sim_meanFitness <- function(counts, w=c(0.25, 1, 1, 0.25)) {#
+	Total <- sum(counts)#
+	AA <- w[4] * (counts[4] / Total)#
+	Aa <- (w[2] * (counts[2] / Total) ) + (w[3] * (counts[3]) / Total))
+sim_meanFitness <- function(counts, w=c(0.25, 1, 1, 0.25)) {#
+	Total <- sum(counts)#
+	AA <- w[4] * (counts[4] / Total)#
+	Aa <- (w[2] * (counts[2] / Total) ) + (w[3] * (counts[3]) / Total ) )
+sim_meanFitness <- function(counts, w=c(0.25, 1, 1, 0.25)) {#
+	Total <- sum(counts)#
+	AA <- w[4] * (counts[4] / Total)#
+	Aa <- (w[2] * (counts[2] / Total) ) + (w[3] * (counts[3] / Total ) )
+aa <- w[1] * (counts [1] / Total)
+meanW <- AA + Aa + aa
+return(as.numeric(meanW))
+}
+Wvec_sin <- c()
+for (i in 1:nrow(Population)) {
+counts <- Population[i, 3:ncol(Population)]
+meanFit <- sim_meanFitness(counts, w=W)
+Wvec_sim[i] <- meanfit
+}
+for (i in 1:nrow(Population)) {#
+	counts <- Population[i, 3:ncol(Population)]#
+	meanFit <- sim_meanFitness(counts, w=W)#
+	Wvec_sim[i] <- meanFit#
+}
+Wvec_sim <- c()#
+for (i in 1:nrow(Population)) {#
+	counts <- Population[i, 3:ncol(Population)]#
+	meanFit <- sim_meanFitness(counts, w=W)#
+	Wvec_sim[i] <- meanFit#
+}
+plot(Wvec_sim[i], xlab="Generations", ylab="Fitness", type="l", pch=13, col="blue")
+plot(Wvec_sim[i], xlab="Generations", ylab="Fitness", type="l", pch=13, col="blue", main="Average Fitness")
+calc_meanFitness <- function(p, w=c(0.25, 1, 1, 0.25)) {
+AA <- w[4] * p^2
+Aa <- 2 * w[2] * p * (1-p)
+aa <- w[1] * (1-p)^2
+meanW <- AA + Aa + aa
+return(meanW)
+}
+p_seq <- seq(from=0, to=1, by=0.01)
+Wvec_calc <- c()
+for (i in 1:length(p_seq)) {
+Wvec_calc [i] <- calc_meanFitness(p_seq [i], W)
+}
+x <- optimize(f=calc_meanFitness, lower=0, upper=1, ,maximum=TRUE)
+x
+par(las=1, mar=c(4, 5, 0.5, 0.5), mgp=c(2, 0.5, 0), tck=-0.01)
+plot(Population[,1], Wvec_sim, xlim=c(0,1), ylim=c(0,1), type="b", pch=16, cex=1.25, xlab="frequency of allele A", ylab="mean fitness of whole population")
+lines(p_seq, Wvec_calc, col="red", lwd=2)
+points(x$maximum, x$objective, pch=21, bg="red", cex=2)
+points(mean(Population[,1]), mean(Wvec_sim), pch=8, col="white", cex=1.5)
+plotFitness <- function(simulatedPopulation, W) {
+p_seq <- seq(from=0, to=1, by=0.01)
+Wvec_calc <- c()
+for (i in 1:length(p_seq)) {
+Wvec_calc[i] <- calc_meanFitness(p_seq[i], W)
+}
+Wvec_sim <- c()
+for(i in 1:nrow(simulatedPopulation)) {
+counts <- simulatedPopulation[i, 3:ncol(simulatedPopulation)]
+meanFit <- sim_meanFitness(counts, w=W)
+Wvec_sim[i] <- meanFit
+}
+par(las=1, mar=c(4, 5, 0.5, 0.5), mgp=c(2.25, 0.4, 0), tck=-0.01)
+plot(1, 1, xlim=c(0, 1), ylim=c(0, 1), type="n", xlab="frequency of allele A", ylab="mean fitness of whole population")
+lines(p_seq, Wvec_calc, col="red", lwd=2)
+points(Population[,1], Wvec_sim, pch=16, col=rgb(0, 0, 0, 0.33), type="b", cex=1.25)
+}
+W <- c(1, 1, 1, 0.55)
+Genotype_Frequencies <- c(0, 0.01, 0.01, 0.01, 0.99)
+Population <- simPop_w(Popsize=500, nGenerations=100, w=W, c("A", "a"), c("A", "a"), Freqs=Genotype_Frequencies)
+plotFitness <- function(simulatedPopulation, W) { #
+	p_seq <- seq(from=0, to=1, by=0.01)#
+	Wvec_calc <- c()#
+	for (i in 1:length(p_seq)) {#
+		Wvec_calc[i] <- calc_meanFitness(p_seq[i], W)#
+	}#
+	Wvec_sim <- c()#
+	for(i in 1:nrow(simulatedPopulation)) {#
+		counts <- simulatedPopulation[i, 3:ncol(simulatedPopulation)]#
+		meanFit <- sim_meanFitness(counts, w=W)#
+		Wvec_sim[i] <- meanFit #
+	}#
+	par(las=1, mar=c(4, 5, 0.5, 0.5), mgp=c(2.25, 0.4, 0), tck=-0.01)#
+	plot(1, 1, xlim=c(0, 1), ylim=c(0, 1), type="n", xlab="frequency of allele A", ylab="mean fitness of whole population")#
+	lines(p_seq, Wvec_calc, col="red", lwd=2)#
+	points(Population[,1], Wvec_sim, pch=16, col=rgb(0, 0, 0, 0.33), type="b", cex=1.25)#
+}#
+W <- c(1, 1, 1, 0.55)#
+Genotype_Frequencies <- c(0, 0.01, 0.01, 0.99)#
+Population <- simPop_w(Popsize=500, nGenerations=100, w=W, c("A", "a"), c("A", "a"), Freqs=Genotype_Frequencies)
+plotFitness(Population, W)
+W <- c(0.55, 1, 1, 1)
+Genotype_Frequencies <- c(0, 0.01, 0.01, 0.99)
+Population <- simPop_w(Popsize=500, nGenerations=100, w=W, c("A", "a"), c("A", "a"), Freqs=Genotype_Frequencies)
+plotFitness(Population, W)
+par(mfcol=c(2, 8))
+W <- c(1, 0.2, 0.2, 1)
+Genotype_Frequencies <- c(0.5, 0, 0, 0.5)
+for (i in 1:8) {
+Population <- simPop_w(Popsize=500, nGenerations=500, w=W, c("A", "a"), C("A", "a"), Freqs=Genotype_Frequencies)
+plotFitness(Population, W)
+plot(Population[,1], type="l", xlab="time (in generations)", ylab="freqency of A", ylim=c(0, 1), lwd=4)
+}
+for(i in 1:nrow(simulatedPopulation)) {#
+		counts <- simulatedPopulation[i, 3:ncol(simulatedPopulation)]#
+		meanFit <- sim_meanFitness(counts, w=W)#
+		Wvec_sim[i] <- meanFit #
+	}#
+	par(las=1, mar=c(4, 5, 0.5, 0.5), mgp=c(2.25, 0.4, 0), tck=-0.01)#
+	plot(1, 1, xlim=c(0, 1), ylim=c(0, 1), type="n", xlab="frequency of allele A", ylab="mean fitness of whole population")#
+	lines(p_seq, Wvec_calc, col="red", lwd=2)#
+	points(Population[,1], Wvec_sim, pch=16, col=rgb(0, 0, 0, 0.33), type="b", cex=1.25)#
+}#
+W <- c(1, 1, 1, 0.55)#
+Genotype_Frequencies <- c(0, 0.01, 0.01, 0.99)#
+Population <- simPop_w(Popsize=500, nGenerations=100, w=W, c("A", "a"), c("A", "a"), Freqs=Genotype_Frequencies)#
+plotFitness(Population, W)#
+#
+W <- c(0.55, 1, 1, 1) #
+Genotype_Frequencies <- c(0, 0.01, 0.01, 0.99)#
+Population <- simPop_w(Popsize=500, nGenerations=100, w=W, c("A", "a"), c("A", "a"), Freqs=Genotype_Frequencies)#
+plotFitness(Population, W)#
+par(mfcol=c(2, 8))#
+W <- c(1, 0.2, 0.2, 1)#
+Genotype_Frequencies <- c(0.5, 0, 0, 0.5)#
+for (i in 1:8) {#
+	Population <- simPop_w(Popsize=500, nGenerations=500, w=W, c("A", "a"), c("A", "a"), Freqs=Genotype_Frequencies)#
+	plotFitness(Population, W)#
+	plot(Population[,1], type="l", xlab="time (in generations)", ylab="freqency of A", ylim=c(0, 1), lwd=4)#
+}
+for (i in 1:8) {#
+	Population <- simPop_w(Popsize=500, nGenerations=500, w=W, c("A", "a"), c("A", "a"), Freqs=Genotype_Frequencies)#
+	plotFitness(Population, W)#
+	plot(Population[,1], type="l", xlab="time (in generations)", ylab="freqency of A", ylim=c(0, 1), lwd=4)#
+}
+plot
+par(mfcol=c(2, 8))
+mating <- function(mother, father) { #
+	Offspring <- c(sample(mother, size = 1), sample (father, size = 1))#
+	Offspring <- sort(Offspring, decreasing=F)#
+	return(Offspring)#
+}#
+makePop <- function(Popsize, Alleles=c("A", "a"), Freqs=c(0.9, 0.05, 0, 0.05)) {#
+	Genos <- combn(c(Alleles, Alleles), 2)#
+	Genos <- sort(unique(apply(Genos, 2, paste, collapse="")), decreasing=F)#
+	Pop <- sample(Genos, size=Popsize, replace=T, prob=Freqs)#
+	Pop <- matrix(unlist(sapply(Pop, strsplit,"")), ncol=2)#
+	return(Pop)#
+}#
+simPop_w <- function(Popsize=100, nGenerations=100, w=c(1, 1, 1, 0), Mother=c("A", "a"), Father=c("A","a"), Freqs=c(0.9, 0.05, 0, 0.05)) {#
+	Combinations <- combn(c(Mother, Father, Mother, Father), 2)#
+	Genos <- sort(unique(apply(Combinations, 2, paste, collapse="")), decreasing=F)#
+	Genotypes <- matrix(0, nrow=nGenerations, ncol=length(Genos))#
+	colnames(Genotypes) <- Genos#
+	Alleles <- unique(as.vector(Combinations))#
+	Frequencies <- matrix(0, nrow=nGenerations, ncol=length(Alleles))#
+	colnames(Frequencies) <- Alleles #
+	names(w) <- colnames(Genotypes)#
+	checkFitness <- function(Geno, w) {#
+		Genot <- paste(Geno[1], Geno[2], sep="")#
+		Fit <- w[Genot]#
+		return(Fit)#
+	}#
+	All_Children <- makePop(Popsize, unique(c(Mother, Father)), Freqs=Freqs)#
+	for (generation in 1:nGenerations) { #
+		#what is their fitnesses? #
+		Fitnesses <- apply(All_Children, 1, checkFitness, w=w)#
+		Women <- sample(1:Popsize, size=(Popsize /2))#
+		Mothers <- All_Children[Women,]#
+		Men <- setdiff(1:Popsize, Women)#
+		Fathers <- All_Children[Men,]#
+		nChildren <- Popsize#
+		for (child in 1:nChildren) {#
+			father <- sample(1:nrow(Fathers), size=1, prob=Fitnesses[Men])#
+			mother <- sample(1:nrow(Mothers), size=1, prob=Fitnesses[Women])#
+			Child <- mating(Mothers[mother,], Fathers[father,])#
+			cGenotype <- paste(Child[1], Child[2], sep="")#
+			Genotypes[generation, cGenotype] <- Genotypes[generation, cGenotype] +1 #
+			All_Children[child,] <- Child#
+		}#
+		for (allele in Alleles) {#
+			n_children <- length(which(All_Children == allele))#
+			Frequencies[generation, which(Alleles == allele)] <- n_children / length(All_Children)#
+		}#
+	}#
+	output <- data.frame(Frequencies=Frequencies, Genotypes=Genotypes)#
+	return(output)#
+}#
+W <- c(0.25, 1, 1, 0.25)#
+Population <- simPop_w(Popsize=500, nGenerations=100, w=W, c("A", "a"), c("A", "a"))#
+sim_meanFitness <- function(counts, w=c(0.25, 1, 1, 0.25)) {#
+	Total <- sum(counts)#
+	AA <- w[4] * (counts[4] / Total)#
+	Aa <- (w[2] * (counts[2] / Total) ) + (w[3] * (counts[3] / Total ) )#
+	aa <- w[1] * (counts [1] / Total) #
+	meanW <- AA + Aa + aa#
+	return(as.numeric(meanW))#
+}#
+Wvec_sim <- c()#
+for (i in 1:nrow(Population)) {#
+	counts <- Population[i, 3:ncol(Population)]#
+	meanFit <- sim_meanFitness(counts, w=W)#
+	Wvec_sim[i] <- meanFit#
+} #
+plot(Wvec_sim[i], xlab="Generations", ylab="Fitness", type="l", pch=13, col="blue", main="Average Fitness", )#
+#
+calc_meanFitness <- function(p, w=c(0.25, 1, 1, 0.25)) {#
+	AA <- w[4] * p^2#
+	Aa <- 2 * w[2] * p * (1-p) #
+	aa <- w[1] * (1-p)^2 #
+	meanW <- AA + Aa + aa#
+	return(meanW)#
+}#
+p_seq <- seq(from=0, to=1, by=0.01)#
+Wvec_calc <- c()#
+for (i in 1:length(p_seq)) {#
+	Wvec_calc [i] <- calc_meanFitness(p_seq [i], W)#
+}#
+x <- optimize(f=calc_meanFitness, lower=0, upper=1, ,maximum=TRUE)#
+x#
+par(las=1, mar=c(4, 5, 0.5, 0.5), mgp=c(2, 0.5, 0), tck=-0.01)#
+plot(Population[,1], Wvec_sim, xlim=c(0,1), ylim=c(0,1), type="b", pch=16, cex=1.25, xlab="frequency of allele A", ylab="mean fitness of whole population")#
+lines(p_seq, Wvec_calc, col="red", lwd=2)#
+points(x$maximum, x$objective, pch=21, bg="red", cex=2)#
+points(mean(Population[,1]), mean(Wvec_sim), pch=8, col="white", cex=1.5)#
+plotFitness <- function(simulatedPopulation, W) { #
+	p_seq <- seq(from=0, to=1, by=0.01)#
+	Wvec_calc <- c()#
+	for (i in 1:length(p_seq)) {#
+		Wvec_calc[i] <- calc_meanFitness(p_seq[i], W)#
+	}#
+	Wvec_sim <- c()#
+	for(i in 1:nrow(simulatedPopulation)) {#
+		counts <- simulatedPopulation[i, 3:ncol(simulatedPopulation)]#
+		meanFit <- sim_meanFitness(counts, w=W)#
+		Wvec_sim[i] <- meanFit #
+	}#
+	par(las=1, mar=c(4, 5, 0.5, 0.5), mgp=c(2.25, 0.4, 0), tck=-0.01)#
+	plot(1, 1, xlim=c(0, 1), ylim=c(0, 1), type="n", xlab="frequency of allele A", ylab="mean fitness of whole population")#
+	lines(p_seq, Wvec_calc, col="red", lwd=2)#
+	points(Population[,1], Wvec_sim, pch=16, col=rgb(0, 0, 0, 0.33), type="b", cex=1.25)#
+}#
+W <- c(1, 1, 1, 0.55)#
+Genotype_Frequencies <- c(0, 0.01, 0.01, 0.99)#
+Population <- simPop_w(Popsize=500, nGenerations=100, w=W, c("A", "a"), c("A", "a"), Freqs=Genotype_Frequencies)#
+plotFitness(Population, W)#
+#
+W <- c(0.55, 1, 1, 1) #
+Genotype_Frequencies <- c(0, 0.01, 0.01, 0.99)#
+Population <- simPop_w(Popsize=500, nGenerations=100, w=W, c("A", "a"), c("A", "a"), Freqs=Genotype_Frequencies)#
+plotFitness(Population, W)#
+par(mfcol=c(2, 8))#
+W <- c(1, 0.2, 0.2, 1)#
+Genotype_Frequencies <- c(0.5, 0, 0, 0.5)#
+for (i in 1:8) {#
+	Population <- simPop_w(Popsize=500, nGenerations=500, w=W, c("A", "a"), c("A", "a"), Freqs=Genotype_Frequencies)#
+	plotFitness(Population, W)#
+	plot(Population[,1], type="l", xlab="time (in generations)", ylab="freqency of A", ylim=c(0, 1), lwd=4)#
+}#
+#
+par(mfcol=c(2, 8))#
+W <- c(1, 0.25, 0.25, 1)#
+Genotype_Frequencies <- c(0.1, 0, 0, 0.9)#
+for (i in 1:8) {#
+	Population <- simPop_w(Popsize=100, nGeneration=100, w=W, c("A", "a"), c("A", "a"), Freqs=Genotype_Frequencies)#
+	plotFitness(Population, W)#
+	plot(Population[,1], type"l", xlab="time (in generation)", ylab="frequency of A", ylim=c(0, 1), lwd=4)#
+}
+install.package(learnPopGen)
+learnPopGen
+library(learnPopGen)
+install.packages("learnPopGen")
+help(learnPopGen)
+library(learnPopGen)
+help(learnPopGen)
+??learnPopGen
+install.pacakges("learnPopGen")
+install.packages("learnPopGen")
+library(learnPopGen)
+?coalescent
+?coalescent.plot()
+coalescent.plot(n=20, ngen=30, col.order="alternating")
+coalescent.plot(n=10, ngen=20, colors=NULL, ...)
+coalescent.plot(n=10, ngen=20, colors=NULL)
+coalescent.plot(n=100, ngen=100, colors=NULL)
+coalescent.plot(n=50, ngen=50, colors=NULL)
+coalescent.plot(n=50, ngen=60, colors=NULL)
+coalescent.plot(n=100, ngen=100, colors=NULL)
+coalescent.plot(n=20, ngen=30, col.order="alternating")
+coalescent.plot(n=2, ngen=4, colors=NULL)
+coalescent.plot(n=1, ngen=1, colors=NULL)
+coalescent.plot(n=2, ngen=3, colors=NULL)
+coalescent.plot(n=1, ngen=3, colors=NULL)
+coalescent.plot(n=1, ngen=1, colors=NULL)
+coalescent.plot(n=20, ngen30, colors=NULL)
+coalescent.plot(n=20, ngen=30, colors=NULL)
+coalescent.plot(n=100, ngen=100, colors=NULL)
+library("phytools")
+list("tree")
+vector("births")
+vec <- vector("births")
+vector?
+?vector
+is_empty("births")
+is_empty(births)
+is_empty <- ("births")
+is_empty <- ("Fractions")
+for(i in 1:100)
+source("http://jonsmitchell.com/code/plotFxn02b.R")
+results <- read.csv("http://jonsmitchell.com/data/biol112abresults.csv", stringsAsFactors=F)
+setwd("~/Desktop/Evolution/Tasks/Task_05")
+results <- read.csv("http://jonsmitchell.com/data/biol112abresults.csv", stringsAsFactors=F)
+results <- read.csv("http://jonsmitchell.com/data/biol112labresults.csv", stringsAsFactors=F)
+counts <- results[,c("yellow", "red", "green", "blue", "black", "tan")]
+backgrounds <- c("White", "Red", "Yellow", "Green", "Blue", "Black")
+calcChi(counts[1,])
+calcChi(counts[1 ,])
+backgroundCol <- c("white", "#d53e4f", "#fee08b", "#abdda4", "#3288bd","black")
+calcChi(counts[1 ,])
+calcChi(counts[1,])
+Chisqs <- apply(counts, 1, calcChi)
+calcChisq(counts[1,])
+setwd("~/Desktop/Evolution/Tasks/Task_05")#
+results <- read.csv("http://jonsmitchell.com/data/biol112labresults.csv", stringsAsFactors=F)
+counts <- results[,c("yellow", "red", "green", "blue", "black", "tan")]
+backgrounds <- c("White", "Red", "Yellow", "Green", "Blue", "Black")
+backgroundCol <- c("white", "#d53e4f", "#fee08b", "#abdda4", "#3288bd","black")
+calcChi(counts[1,])
+calcChi <- c(counts[1,])
+calcChi(counts[1,])
+setwd("~/Desktop/Evolution/Tasks/Task_05")#
+source("http://jonsmitchell.com/code/fxn05.R")#
+#
+#a simple simulation #
+Pop1 <- simPop(Popsize = 50, nGenerations = 100, initial_p = 0.5, h = 1, s = 0)#
+plot(1:nrow(Pop1), Pop1[, 1], ylim=c(0,1), type ="l", xlab="generation", ylab="allele freq.", lwd=2)#
+lines(1:nrow(Pop1), Pop1[, 2], lwd=2, col="red")#
+legend("topleft", legend = c("a", "b"), col = c("black", "red"), lwd = 2, bty="n")#
+#
+plotFit(nruns=10, n=50, ngens=100, init_p=0.5, h=1, s=0)#
+#
+#What is a test statistic? #
+#A test statistic is a way to quantify how different a set of observations is from your expectation. #
+#
+#we expect to see four equal categories #
+Expectation <- c(10, 10, 10, 10)#
+#four uneven categories#
+Observed <- c(15, 15, 5, 5) #
+#Chi-squared statistic #
+Chisq <- sum(((Expectation - Observed)^ 2)/ Expectation)#
+Observed <- c(5, 0, 0, 35) #
+Observed <- c(2, 3, 10, 30)#
+#
+setwd("~/Desktop/Evolution/Tasks/Task_05")#
+results <- read.csv("http://jonsmitchell.com/data/biol112labresults.csv", stringsAsFactors=F)#
+#
+#Simple subsettings to have the right pieces #
+counts <- results[,c("yellow", "red", "green", "blue", "black", "tan")]#
+#List of background colors #
+backgrounds <- c("White", "Red", "Yellow", "Green", "Blue", "Black")#
+#Set some nicer default colors (optional)#
+backgroundCol <- c("white", "#d53e4f", "#fee08b", "#abdda4", "#3288bd","black")#
+#Now lets calculate the Chi-Squared statistic for the first row#
+calcChi(counts[1,])#
+Chisqs <- apply(counts, 1, calcChi)
+#a simple simulation #
+Pop1 <- simPop(Popsize = 50, nGenerations = 100, initial_p = 0.5, h = 1, s = 0)#
+plot(1:nrow(Pop1), Pop1[, 1], ylim=c(0,1), type ="l", xlab="generation", ylab="allele freq.", lwd=2)#
+lines(1:nrow(Pop1), Pop1[, 2], lwd=2, col="red")#
+legend("topleft", legend = c("a", "b"), col = c("black", "red"), lwd = 2, bty="n")
+plotFit(nruns=10, n=50, ngens=100, init_p=0.5, h=1, s=0)
+plotFit(nruns=10, n=500, ngens=100, init_p=0.5, h=1, s=0)
+plotFit(nruns=10, n=5, ngens=100, init_p=0.5, h=1, s=0)
+plotFit(nruns=10, n=5, ngens=100, init_p=0.5, h=1, s=0.25)
+plotFit(nruns=10, n=25, ngens=100, init_p=0.5, h=1, s=0.25)
+plotFit(nruns=10, n=15, ngens=100, init_p=0.5, h=1, s=0.25)
+plotFit(nruns=10, n=50, ngens=100, init_p=0.5, h=1, s=0.25)
+plotFit(nruns=5, n=50, ngens=100, init_p=0.5, h=1, s=0.05)
+plotFit(nruns=5, n=50, ngens=100, init_p=0.5, h=.5, s=0.05)
+plotFit(nruns=5, n=50, ngens=100, init_p=0.5, h=-1.5, s=0.05)
+plotFit(nruns=5, n=50, ngens=100, init_p=0.5, h=-2.5, s=0.05)
+setwd("~/Desktop/Evolution/Tasks/Task_05")#
+source("http://jonsmitchell.com/code/fxn05.R")#
+#
+#a simple simulation #
+Pop1 <- simPop(Popsize = 50, nGenerations = 100, initial_p = 0.5, h = 1, s = 0)#
+plot(1:nrow(Pop1), Pop1[, 1], ylim=c(0,1), type ="l", xlab="generation", ylab="allele freq.", lwd=2)#
+lines(1:nrow(Pop1), Pop1[, 2], lwd=2, col="red")#
+legend("topleft", legend = c("a", "b"), col = c("black", "red"), lwd = 2, bty="n")#
+#
+plotFit(nruns=5, n=50, ngens=100, init_p=0.5, h=-2.5, s=0.05)#
+#
+#What is a test statistic? #
+#A test statistic is a way to quantify how different a set of observations is from your expectation. #
+#
+#we expect to see four equal categories #
+Expectation <- c(10, 10, 10, 10)#
+#four uneven categories#
+Observed <- c(15, 15, 5, 5) #
+#Chi-squared statistic #
+Chisq <- sum(((Expectation - Observed)^ 2)/ Expectation)#
+Observed <- c(5, 0, 0, 35) #
+Observed <- c(2, 3, 10, 30)#
+#
+setwd("~/Desktop/Evolution/Tasks/Task_05")#
+results <- read.csv("http://jonsmitchell.com/data/biol112labresults.csv", stringsAsFactors=F)#
+#
+#Simple subsettings to have the right pieces #
+counts <- results[,c("yellow", "red", "green", "blue", "black", "tan")]#
+#List of background colors #
+backgrounds <- c("White", "Red", "Yellow", "Green", "Blue", "Black")#
+#Set some nicer default colors (optional)#
+backgroundCol <- c("white", "#d53e4f", "#fee08b", "#abdda4", "#3288bd","black")#
+#Now lets calculate the Chi-Squared statistic for the first row#
+calcChi(counts[1,])#
+Chisqs <- apply(counts, 1, calcChi)
+plotChis(counts)
+Avg <- mean(Chisqs)
+backgroundAvgs <- tapply(Chisqs, results[,3], mean)
+propSig <- length(which(Chisqs > 11.70)) / length(Chisqs)
+percSig <- round(100 * propSig)
+setwd("~/Desktop/Evolution/Tasks/Task_05")#
+source("http://jonsmitchell.com/code/fxn05.R")#
+#
+#a simple simulation #
+Pop1 <- simPop(Popsize = 50, nGenerations = 100, initial_p = 0.5, h = 1, s = 0)#
+plot(1:nrow(Pop1), Pop1[, 1], ylim=c(0,1), type ="l", xlab="generation", ylab="allele freq.", lwd=2)#
+lines(1:nrow(Pop1), Pop1[, 2], lwd=2, col="red")#
+legend("topleft", legend = c("a", "b"), col = c("black", "red"), lwd = 2, bty="n")#
+#
+plotFit(nruns=5, n=50, ngens=100, init_p=0.5, h=-2.5, s=0.05)#
+#
+#What is a test statistic? #
+#A test statistic is a way to quantify how different a set of observations is from your expectation. #
+#
+#we expect to see four equal categories #
+Expectation <- c(10, 10, 10, 10)#
+#four uneven categories#
+Observed <- c(15, 15, 5, 5) #
+#Chi-squared statistic #
+Chisq <- sum(((Expectation - Observed)^ 2)/ Expectation)#
+Observed <- c(5, 0, 0, 35) #
+Observed <- c(2, 3, 10, 30)#
+#
+setwd("~/Desktop/Evolution/Tasks/Task_05")#
+results <- read.csv("http://jonsmitchell.com/data/biol112labresults.csv", stringsAsFactors=F)#
+#
+#Simple subsettings to have the right pieces #
+counts <- results[,c("yellow", "red", "green", "blue", "black", "tan")]#
+#List of background colors #
+backgrounds <- c("White", "Red", "Yellow", "Green", "Blue", "Black")#
+#Set some nicer default colors (optional)#
+backgroundCol <- c("white", "#d53e4f", "#fee08b", "#abdda4", "#3288bd","black")#
+#Now lets calculate the Chi-Squared statistic for the first row#
+calcChi(counts[1,])#
+Chisqs <- apply(counts, 1, calcChi)
+plotChis(counts)
+Avg <- mean(Chisqs)
+backgroundAvgs <- tapply(Chisqs, results[,3], mean)
+propSig <- length(which(Chisqs > 11.70)) / length(Chisqs)
+percSig <- round(100 * propSig)par(las = 1, mar = c(4, 4, 1, 1), mgp = c(2, 0.5, 0), tck = -0.01, cex. axis=1)
+percSig <- round(100 * propSig)
+par(las = 1, mar = c(4, 4, 1, 1), mgp = c(2, 0.5, 0), tck = -0.01, cex. axis=1)
+par(las = 1, mar = c(4, 4, 1, 1), mgp = c(2, 0.5, 0), tck = -0.01, cex axis=1)
+setwd("~/Desktop/Evolution/Tasks/Task_05")#
+source("http://jonsmitchell.com/code/fxn05.R")
+results <- read.csv("http://jonsmitchell.com/data/biol112labresults.csv", stringsAsFactors=F)
+counts <- results[,c("yellow", "red", "green", "blue", "black", "tan")]#
+#List of background colors #
+backgrounds <- c("White", "Red", "Yellow", "Green", "Blue", "Black")#
+#Set some nicer default colors (optional)#
+backgroundCol <- c("white", "#d53e4f", "#fee08b", "#abdda4", "#3288bd","black")#
+#Now lets calculate the Chi-Squared statistic for the first row#
+calcChi(counts[1,])#
+Chisqs <- apply(counts, 1, calcChi)
+plotChis(counts)
+Avg <- mean(Chisqs)
+backgroundAvgs <- tapply(Chisqs, results[,3], mean)
+propSig <- length(which(Chisqs > 11.70)) / length(Chisqs)#
+percSig <- round(100 * propSig)
+par(las = 1, mar = c(4, 4, 1, 1), mgp = c(2, 0.5, 0), tck = -0.01, cex. axis=1)
+par(las=1, mar=c(4, 4, 1, 1), mgp=c(2, 0.5, 0), tck=-0.01, cex. axis=1)
+par(las=1, mar=c(4, 4, 1, 1), mgp=c(2, 0.5, 0), tck=0.01, cex. axis=1)
+plot(1, 1, xlim=c(0, 400), ylim=c(1, 8.5), xlab="", ylab="", type="n", yaxt= "n")
+axis(2, at=1: length(backgrounds), labels = backgrounds)#
+mtext(side = 1, expression(chi^2), cex=1.75, line=2.5)#
+counter <- 1
+for (i in backgrounds) {#
+	Data <- Chisqs[which(results[,3] == i)]#
+	addHist(Y=counter, Dat=Data, Color=backgroundCol[counter])#
+	counter <- counter + 1#
+}
+abline(v=11.70, lty=2, lwd=2, col="black")#
+#
+Simulation <- simDraws(10000)#
+addHist(Y=7, Dat=Simulation, Color="lightgray")#
+mtext(side=2, at=7, line=0, "simulated")#
+abline(v=11.70, lty=2, lwd=2)
+Fit <- c(1, 1, 1, 1, 1, 1)#
+names(Fit) <- 1:6#
+Simulation2 <- simDraws(1e4, w=Fit)#
+addHist(Y=8, Dat=Simulation2, Color=rgb(0, 0, 0, 0.25))
+Fit <- c(0.1, 1, 1, 1, 1, 1)#
+names(Fit) <- 1:6#
+Simulation3 <- simDraws(1e4, w=Fit)#
+addHist(Y=8, Dat=Simulation3, Color=rgb(0, 0, 0, 0.25))
+Fit <- c(0.5, 0.6, 0.7, 1, 1, 1)#
+names(Fit) <- 1:6#
+Simulation4 <- simDraws(1e4, w=Fit)#
+addHist(Y=8, Dat=Simulation4, Color=rgb(0, 0, 0, 0.25))
+Fit <- c(0.1, 0.2, 0.3, 0.4, 0.5, 1)#
+names(Fit) <- 1:6#
+Simulation5 <- simDraws(1e4, w= Fit)#
+addHist(Y=8, Dat=Simulation5, Color=rgb(0, 0, 0, 0.25))
+Fit <- c(0.1, 0.1, 0.1, 0.1, 0.1, 1)#
+names(Fit) <- 1:6#
+Simulation6 <- simDraws(1e4, w=Fit)#
+addHist(Y=8, Dat=Simulation6, Color=rgb(0, 0, 0, 0.25))#
+mtext(side=2, at=8, line=0, "sel.sim.")
+Simulation7 <- c(Simulation2, Simulation3, Simulation4, Simulation5, Simulation6)#
+addHist(Y=8, Dat=Simulation7, Color=rgb(0, 0, 1, 0.25))
+setwd("~/Desktop/Evolution/Tasks/Task_05")#
+source("http://jonsmitchell.com/code/fxn05.R")
+results <- read.csv("http://jonsmitchell.com/data/biol112labresults.csv", stringsAsFactors=F)
+counts <- results[,c("yellow", "red", "green", "blue", "black", "tan")]#
+#List of background colors #
+backgrounds <- c("White", "Red", "Yellow", "Green", "Blue", "Black")#
+#Set some nicer default colors (optional)#
+backgroundCol <- c("white", "#d53e4f", "#fee08b", "#abdda4", "#3288bd","black")#
+#Now lets calculate the Chi-Squared statistic for the first row#
+calcChi(counts[1,])#
+#All rows #
+Chisqs <- apply(counts, 1, calcChi)
+plotChis(counts)
+plotChis(counts)
+plotChis(counts)
+Avg <- mean(Chisqs)
+backgroundAvgs <- tapply(Chisqs, results[,3], mean)
+propSig <- length(which(Chisqs > 11.70)) / length(Chisqs)
+percSig <- round(100 * propSig)
+propSig
+percSig
+par(las=1, mar=c(4, 4, 1, 1), mgp=c(2, 0.5, 0), tck=-0.01, cex. axis=1)
+help()
+par(las=1, mar=c(4, 4, 1, 1), mgp=c(2, 0.5, 0), tck=-0.01, cex. axis=1)#
+hist(Chisqs, main="", xlab="chi-squared values", ylab="frequency")#
+par(las=1, mar=c(4, 4, 1, 1), mgp=c(2, 0.5, 0), tck=-0.01, cex. axis=1)#
+plot(1, 1, xlim=c(0, 400), ylim=c(1, 8.5), xlab="", ylab="", type="n", yaxt= "n")
+par(las = 1, mar = c(4, 4, 1, 1), mgp = c(2, 0.5, 0), tck = -0.01, cex.axis=1)
+hist(Chisqs, main="", xlab="chi-squared values", ylab="frequency")#
+par(las=1, mar=c(4, 4, 1, 1), mgp=c(2, 0.5, 0), tck=-0.01, cex.axis=1)#
+plot(1, 1, xlim=c(0, 400), ylim=c(1, 8.5), xlab="", ylab="", type="n", yaxt= "n")
+axis(2, at=1: length(backgrounds), labels = backgrounds)#
+mtext(side = 1, expression(chi^2), cex=1.75, line=2.5)
+counter <- 1
+for (i in backgrounds) {#
+	Data <- Chisqs[which(results[,3] == i)]#
+	addHist(Y=counter, Dat=Data, Color=backgroundCol[counter])#
+	counter <- counter + 1#
+}
+abline(v=11.70, lty=2, lwd=2, col="black")
+Simulation <- simDraws(10000)
+addHist(Y=7, Dat=Simulation, Color="lightgray")#
+mtext(side=2, at=7, line=0, "simulated")
+abline(v=11.70, lty=2, lwd=2)
+Fit <- c(0.1, 1, 1, 1, 1, 1)
+names(Fit) <- 1:6#
+Simulation3 <- simDraws(1e4, w=Fit)#
+addHist(Y=8, Dat=Simulation3, Color=rgb(0, 0, 0, 0.25))
+Fit <- c(1, 1, 1, 1, 1, 1)#
+names(Fit) <- 1:6#
+Simulation2 <- simDraws(1e4, w=Fit)#
+addHist(Y=8, Dat=Simulation2, Color=rgb(0, 0, 0, 0.25))
+Fit <- c(0.1, 1, 1, 1, 1, 1)#
+names(Fit) <- 1:6#
+Simulation3 <- simDraws(1e4, w=Fit)#
+addHist(Y=8, Dat=Simulation3, Color=rgb(0, 0, 0, 0.25))
+Fit <- c(0.5, 0.6, 0.7, 1, 1, 1)#
+names(Fit) <- 1:6#
+Simulation4 <- simDraws(1e4, w=Fit)#
+addHist(Y=8, Dat=Simulation4, Color=rgb(0, 0, 0, 0.25))
+Fit <- c(0.1, 0.2, 0.3, 0.4, 0.5, 1)#
+names(Fit) <- 1:6#
+Simulation5 <- simDraws(1e4, w= Fit)#
+addHist(Y=8, Dat=Simulation5, Color=rgb(0, 0, 0, 0.25))
+Fit <- c(0.1, 0.1, 0.1, 0.1, 0.1, 1)#
+names(Fit) <- 1:6#
+Simulation6 <- simDraws(1e4, w=Fit)#
+addHist(Y=8, Dat=Simulation6, Color=rgb(0, 0, 0, 0.25))
+mtext(side=2, at=8, line=0, "sel.sim.")
+Simulation7 <- c(Simulation2, Simulation3, Simulation4, Simulation5, Simulation6)#
+addHist(Y=8, Dat=Simulation7, Color=rgb(0, 0, 1, 0.25))
