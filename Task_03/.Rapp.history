@@ -1,9 +1,3 @@
-Women <- sample(1:Popsize, size=(Popsize /2))
-Mothers <- All_Children[Women,]
-Men <- setdiff(1:Popsize, Women)
-Fathers <- All_Children[Men,]
-nChildren <- Popsize
-for (child in 1:nChildren) {
 father <- sample(1:nrow(Fathers), size=1, prob=Fitnesses[Men])
 mother <- sample(1:nrow(Mothers), size=1, prob=Fitnesses[Women])
 Child <- mating(Mothers[mother,], Fathers[father,])
@@ -727,3 +721,10 @@ LineWidth <- 2
 plot(seq(to=MaxMA, from=MinMA, length.out=nrow(nspeciesOverTime3)), nspeciesOverTime3[,2], xlim=c(MaxMA, MinMA), type="l", xlab="age (millions of years ago)", ylab="num. of species", col=Col_bivalve, lwd=LineWidth)
 lines(seq(to=MaxMA, from=MinMA, length.out=nrow(nspeciesOverTime4)), nspeciesOverTime4[,2], col=Col_echinoderm, lwd=LineWidth)
 legend("topleft", legend=c(Taxon3, Taxon4), col=c(Col_bivalve, Col_echinoderm), bty="n", lwd=LineWidth)
+install.packages("paleobioDB", dep=T)
+library(paleobioDB)
+Taxon <- Testudinidae
+Taxon <- Testudines
+Taxon <- Gopherus
+source("https://www-ncbi-nlm-nih-gov.www.libproxy.wvu.edu/pmc/articles/PMC4482574/")
+source("http:www-ncbi-nim-nih-gov.www.libproxy.wvu.edu/pmc/articles/PMC4482574/")
