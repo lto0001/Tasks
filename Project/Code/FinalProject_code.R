@@ -26,7 +26,9 @@ extinct <- c(0, 6, 0, 2, 0, 1)
 DataDeficient <- c(0, 2, 3, 5, 1, 1)
 #For data deficient: Neartic(0), Afro(2), Aus(3), Neo(5), Pal(1), Indo(1)
 
-barplot(rbind(vulnerable, critical, threatened, LowRisk, LeastConcern, endangered, extinct, DataDeficient), names.arg = c("Nearctic", "Afrotropical", "Australasian", "Neotropical", "Palearctic", "Indomalayan"), legend.text = c("vulnerable", "critical", "threatened", "LowRisk", "LeastConcern", "endangered", "extinct", "DataDeficient"), beside = TRUE, xlab = "Realm", ylab = "Number of Turtles")
+par(mar = c(5,4,4,8))
+
+barplot(rbind(vulnerable, critical, threatened, LowRisk, LeastConcern, endangered, extinct, DataDeficient), names.arg = c("Nearctic", "Afrotropical", "Australasian", "Neotropical", "Palearctic", "Indomalayan"), legend.text = c("vulnerable", "critical", "threatened", "LowRisk", "LeastConcern", "endangered", "extinct", "DataDeficient"), beside = TRUE, xlab = "Realm", ylab = "Number of Turtles", args.legend = list(x = "right", inset=c(-0.24,0), xpd = TRUE))
 
 #Hypothesis:Extinction rates are positively correlated with habitat type in turtles. 
 #Why do more human populated areas have small population of turtles? 
